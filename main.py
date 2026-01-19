@@ -18,18 +18,18 @@ sessions_db = {}
 wishlists_db = {}  # user_id -> [product_ids]
 favorites_db = {}  # user_id -> [product_ids]
 
-# Demo products
+# Demo products - using Picsum for reliable images
 PRODUCTS = [
-    {"id": 1, "name": "Cloud Chaser 510", "price": 24.99, "category": "510 Thread", "image": "https://images.unsplash.com/photo-1560024802-d5ff0b3e6bde?w=400", "description": "Premium 510 thread cartridge, ceramic coil", "premium_only": False},
-    {"id": 2, "name": "Stealth Pod Pro", "price": 29.99, "category": "Pod System", "image": "https://images.unsplash.com/photo-1571266752485-a94c9d529c89?w=400", "description": "Compact pod with adjustable airflow", "premium_only": False},
-    {"id": 3, "name": "Terp Tank Elite", "price": 34.99, "category": "510 Thread", "image": "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=400", "description": "Glass tank, quartz heating element", "premium_only": False},
-    {"id": 4, "name": "Vapor King XL", "price": 39.99, "category": "510 Thread", "image": "https://images.unsplash.com/photo-1544816565-aa8c1166648f?w=400", "description": "Extra large capacity, long-lasting", "premium_only": False},
-    {"id": 5, "name": "Midnight Black Cart", "price": 27.99, "category": "510 Thread", "image": "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400", "description": "Sleek black design, ceramic core", "premium_only": False},
-    {"id": 6, "name": "Crystal Clear Pod", "price": 32.99, "category": "Pod System", "image": "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?w=400", "description": "See-through design, leak-proof", "premium_only": False},
-    {"id": 7, "name": "Gold Reserve 510", "price": 49.99, "category": "Premium", "image": "https://images.unsplash.com/photo-1567103472667-6898f3a79cf2?w=400", "description": "24K gold contacts, lifetime warranty", "premium_only": True},
-    {"id": 8, "name": "Diamond Series Cart", "price": 59.99, "category": "Premium", "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400", "description": "Diamond-cut glass, titanium coil", "premium_only": True},
-    {"id": 9, "name": "Platinum Pod Ultra", "price": 54.99, "category": "Premium", "image": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400", "description": "Premium materials, exclusive design", "premium_only": True},
-    {"id": 10, "name": "Limited Edition Rose", "price": 69.99, "category": "Premium", "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400", "description": "Rose gold finish, collectors item", "premium_only": True},
+    {"id": 1, "name": "Cloud Chaser 510", "price": 24.99, "category": "510 Thread", "image": "https://picsum.photos/seed/vape1/400/300", "description": "Premium 510 thread cartridge, ceramic coil", "premium_only": False},
+    {"id": 2, "name": "Stealth Pod Pro", "price": 29.99, "category": "Pod System", "image": "https://picsum.photos/seed/vape2/400/300", "description": "Compact pod with adjustable airflow", "premium_only": False},
+    {"id": 3, "name": "Terp Tank Elite", "price": 34.99, "category": "510 Thread", "image": "https://picsum.photos/seed/vape3/400/300", "description": "Glass tank, quartz heating element", "premium_only": False},
+    {"id": 4, "name": "Vapor King XL", "price": 39.99, "category": "510 Thread", "image": "https://picsum.photos/seed/vape4/400/300", "description": "Extra large capacity, long-lasting", "premium_only": False},
+    {"id": 5, "name": "Midnight Black Cart", "price": 27.99, "category": "510 Thread", "image": "https://picsum.photos/seed/vape5/400/300", "description": "Sleek black design, ceramic core", "premium_only": False},
+    {"id": 6, "name": "Crystal Clear Pod", "price": 32.99, "category": "Pod System", "image": "https://picsum.photos/seed/vape6/400/300", "description": "See-through design, leak-proof", "premium_only": False},
+    {"id": 7, "name": "Gold Reserve 510", "price": 49.99, "category": "Premium", "image": "https://picsum.photos/seed/gold7/400/300", "description": "24K gold contacts, lifetime warranty", "premium_only": True},
+    {"id": 8, "name": "Diamond Series Cart", "price": 59.99, "category": "Premium", "image": "https://picsum.photos/seed/diamond8/400/300", "description": "Diamond-cut glass, titanium coil", "premium_only": True},
+    {"id": 9, "name": "Platinum Pod Ultra", "price": 54.99, "category": "Premium", "image": "https://picsum.photos/seed/plat9/400/300", "description": "Premium materials, exclusive design", "premium_only": True},
+    {"id": 10, "name": "Limited Edition Rose", "price": 69.99, "category": "Premium", "image": "https://picsum.photos/seed/rose10/400/300", "description": "Rose gold finish, collectors item", "premium_only": True},
 ]
 
 class RegisterRequest(BaseModel):
