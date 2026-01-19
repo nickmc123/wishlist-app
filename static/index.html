@@ -493,6 +493,13 @@
                 <span id="toggleText">Don't have an account?</span>
                 <a href="#" id="authToggle">Sign Up</a>
             </p>
+            
+            <div style="text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #333;">
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 12px;">Just want to look around?</p>
+                <a href="#" onclick="demoLogin(); return false;" style="color: var(--gold); font-size: 16px; font-weight: 600; text-decoration: none;">
+                    ✨ Try Demo Account
+                </a>
+            </div>
         </div>
     </div>
     
@@ -677,6 +684,24 @@
                 document.getElementById('authError').style.display = 'block';
             }
         });
+        
+        // Demo Login - bypasses form
+        async function demoLogin() {
+            try {
+                const res = await api('/auth/login', 'POST', {
+                    email: 'demo@wishlist.app',
+                    password: 'demo123'
+                });
+                token = res.token;
+                user = res.user;
+                localStorage.setItem('wishlist_token', token);
+                localStorage.setItem('wishlist_user', JSON.stringify(user));
+                showMainApp();
+            } catch (err) {
+                document.getElementById('authError').textContent = 'Demo account unavailable. Try again later.';
+                document.getElementById('authError').style.display = 'block';
+            }
+        }
         
         // Logout
         function logout() {
