@@ -18,6 +18,18 @@ sessions_db = {}
 wishlists_db = {}  # user_id -> [product_ids]
 favorites_db = {}  # user_id -> [product_ids]
 
+# Demo account - pre-populated
+demo_user = {
+    "id": "demo_user_001",
+    "email": "demo@wishlist.app",
+    "name": "Demo User",
+    "password_hash": hashlib.sha256("demo123".encode()).hexdigest(),
+    "is_premium": True  # Premium so they can see all products
+}
+users_db["demo@wishlist.app"] = demo_user
+wishlists_db["demo_user_001"] = [1, 3, 5]  # Cloud Chaser, Terp Tank, Midnight Black
+favorites_db["demo_user_001"] = [2, 7]  # Stealth Pod, Gold Reserve
+
 # Demo products - using Picsum for reliable images
 PRODUCTS = [
     {"id": 1, "name": "Cloud Chaser 510", "price": 24.99, "category": "510 Thread", "image": "https://picsum.photos/seed/vape1/400/300", "description": "Premium 510 thread cartridge, ceramic coil", "premium_only": False},
