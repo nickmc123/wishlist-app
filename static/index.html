@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wishlist - Vape Cartridges</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#6B46C1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --primary: #6B46C1;
+            --primary-dark: #553C9A;
+            --secondary: #9F7AEA;
+            --bg: #1A1A2E;
+            --card-bg: #16213E;
+            --text: #FFFFFF;
+            --text-muted: #A0AEC0;
+            --gold: #FFD700;
+            --success: #48BB78;
+            --danger: #F56565;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .screen { display: none; }
+        .screen.active { display: block; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .header-sub {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        
+        /* Auth Screen */
+        .auth-container {
+            padding: 40px 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .auth-logo h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .auth-logo p {
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #333;
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1A1A2E;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .auth-toggle {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-muted);
+        }
+        
+        .auth-toggle a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .error-msg {
+            background: rgba(245, 101, 101, 0.2);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 16px;
+        }
+        
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-card.locked {
+            opacity: 0.6;
+        }
+        
+        .product-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: #2D3748;
+        }
+        
+        .product-info {
+            padding: 12px;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        
+        .product-category {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            background: rgba(107, 70, 193, 0.2);
+            color: var(--secondary);
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: rgba(107, 70, 193, 0.4);
+        }
+        
+        .action-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .lock-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: var(--gold);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Premium Banner */
+        .premium-banner {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1A1A2E;
+            padding: 16px 20px;
+            margin: 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .premium-banner h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .premium-banner p {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+        }
+        
+        .premium-banner button {
+            background: #1A1A2E;
+            color: var(--gold);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #333;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .nav-item.active {
+            color: var(--secondary);
+        }
+        
+        .nav-item span {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state span {
+            font-size: 64px;
+            display: block;
+            margin-bottom: 16px;
+        }
+        
+        /* User Info */
+        .user-info {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 16px;
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .user-email {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .premium-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1A1A2E;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .menu-list {
+            margin-top: 24px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .menu-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .menu-item span:first-child {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        
+        .menu-item span:last-child {
+            margin-left: auto;
+            color: var(--text-muted);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translate(-50%, 20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab.active {
+            background: var(--secondary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="screen active">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <h1>💨 Wishlist</h1>
+                <p>Premium Vape Cartridges</p>
+            </div>
+            
+            <div id="authError" class="error-msg"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            
+            <form id="registerForm" style="display:none;">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="registerName" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            
+            <p class="auth-toggle">
+                <span id="toggleText">Don't have an account?</span>
+                <a href="#" id="authToggle">Sign Up</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main App -->
+    <div id="mainApp" class="screen">
+        <div class="header">
+            <h1>💨 Wishlist</h1>
+            <div class="header-sub" id="userGreeting">Welcome!</div>
+        </div>
+        
+        <!-- Shop Tab -->
+        <div id="shopTab" class="tab-content">
+            <div id="premiumBanner" class="premium-banner">
+                <h3>👑 Go Premium</h3>
+                <p>Unlock exclusive cartridges & early access to drops</p>
+                <button onclick="upgradeToPremium()">Upgrade - $9.99/mo</button>
+            </div>
+            
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterProducts('all')">All</button>
+                <button class="filter-tab" onclick="filterProducts('510 Thread')">510 Thread</button>
+                <button class="filter-tab" onclick="filterProducts('Pod System')">Pod System</button>
+                <button class="filter-tab" onclick="filterProducts('Premium')">Premium 👑</button>
+            </div>
+            
+            <div id="productsGrid" class="products-grid"></div>
+        </div>
+        
+        <!-- Wishlist Tab -->
+        <div id="wishlistTab" class="tab-content" style="display:none;">
+            <div id="wishlistItems" class="products-grid"></div>
+            <div id="wishlistEmpty" class="empty-state" style="display:none;">
+                <span>💫</span>
+                <h3>Your wishlist is empty</h3>
+                <p>Save items you want to buy later</p>
+            </div>
+        </div>
+        
+        <!-- Favorites Tab -->
+        <div id="favoritesTab" class="tab-content" style="display:none;">
+            <div id="favoritesItems" class="products-grid"></div>
+            <div id="favoritesEmpty" class="empty-state" style="display:none;">
+                <span>⭐</span>
+                <h3>No favorites yet</h3>
+                <p>Mark your go-to products</p>
+            </div>
+        </div>
+        
+        <!-- Profile Tab -->
+        <div id="profileTab" class="tab-content" style="display:none;">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div class="user-name" id="profileName">User</div>
+                <div class="user-email" id="profileEmail">user@example.com</div>
+                <div id="premiumBadge" class="premium-badge" style="display:none;">👑 PREMIUM</div>
+            </div>
+            
+            <div class="menu-list">
+                <div class="menu-item" onclick="showTab('wishlist')">
+                    <span>💫</span> My Wishlist <span id="wishlistCount">0</span>
+                </div>
+                <div class="menu-item" onclick="showTab('favorites')">
+                    <span>⭐</span> My Favorites <span id="favoritesCount">0</span>
+                </div>
+                <div class="menu-item" id="upgradeMenuItem" onclick="upgradeToPremium()">
+                    <span>👑</span> Upgrade to Premium <span>→</span>
+                </div>
+                <div class="menu-item" onclick="logout()">
+                    <span>🚪</span> Sign Out <span>→</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="showTab('shop')">
+                <span>🛒</span>
+                Shop
+            </div>
+            <div class="nav-item" onclick="showTab('wishlist')">
+                <span>💫</span>
+                Wishlist
+            </div>
+            <div class="nav-item" onclick="showTab('favorites')">
+                <span>⭐</span>
+                Favorites
+            </div>
+            <div class="nav-item" onclick="showTab('profile')">
+                <span>👤</span>
+                Profile
+            </div>
+        </nav>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+    
+    <script>
+        let token = localStorage.getItem('wishlist_token');
+        let user = JSON.parse(localStorage.getItem('wishlist_user') || 'null');
+        let products = [];
+        let wishlistIds = [];
+        let favoriteIds = [];
+        let currentFilter = 'all';
+        
+        // API helper
+        async function api(endpoint, method = 'GET', body = null) {
+            const options = { method, headers: {} };
+            let url = endpoint;
+            
+            if (token) {
+                url += (url.includes('?') ? '&' : '?') + `token=${token}`;
+            }
+            
+            if (body) {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = JSON.stringify(body);
+            }
+            
+            const res = await fetch(url, options);
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'Request failed');
+            }
+            return res.json();
+        }
+        
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+        
+        // Auth toggle
+        let isLogin = true;
+        document.getElementById('authToggle').addEventListener('click', (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+            document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('toggleText').textContent = isLogin ? "Don't have an account?" : "Already have an account?";
+            document.getElementById('authToggle').textContent = isLogin ? "Sign Up" : "Sign In";
+            document.getElementById('authError').style.display = 'none';
+        });
+        
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const res = await api('/auth/login', 'POST', {
+                    email: document.getElementById('loginEmail').value,
+                    password: document.getElementById('loginPassword').value
+                });
+                token = res.token;
+                user = res.user;
+                localStorage.setItem('wishlist_token', token);
+                localStorage.setItem('wishlist_user', JSON.stringify(user));
+                showMainApp();
+            } catch (err) {
+                document.getElementById('authError').textContent = err.message;
+                document.getElementById('authError').style.display = 'block';
+            }
+        });
+        
+        // Register
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const res = await api('/auth/register', 'POST', {
+                    name: document.getElementById('registerName').value,
+                    email: document.getElementById('registerEmail').value,
+                    password: document.getElementById('registerPassword').value
+                });
+                token = res.token;
+                user = res.user;
+                localStorage.setItem('wishlist_token', token);
+                localStorage.setItem('wishlist_user', JSON.stringify(user));
+                showMainApp();
+            } catch (err) {
+                document.getElementById('authError').textContent = err.message;
+                document.getElementById('authError').style.display = 'block';
+            }
+        });
+        
+        // Logout
+        function logout() {
+            token = null;
+            user = null;
+            localStorage.removeItem('wishlist_token');
+            localStorage.removeItem('wishlist_user');
+            document.getElementById('authScreen').classList.add('active');
+            document.getElementById('mainApp').classList.remove('active');
+        }
+        
+        // Show main app
+        async function showMainApp() {
+            document.getElementById('authScreen').classList.remove('active');
+            document.getElementById('mainApp').classList.add('active');
+            
+            document.getElementById('userGreeting').textContent = `Welcome, ${user.name}!`;
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileEmail').textContent = user.email;
+            
+            updatePremiumUI();
+            await loadProducts();
+            await loadWishlist();
+            await loadFavorites();
+        }
+        
+        // Update premium UI
+        function updatePremiumUI() {
+            const isPremium = user?.is_premium;
+            document.getElementById('premiumBanner').style.display = isPremium ? 'none' : 'block';
+            document.getElementById('premiumBadge').style.display = isPremium ? 'inline-block' : 'none';
+            document.getElementById('upgradeMenuItem').style.display = isPremium ? 'none' : 'flex';
+        }
+        
+        // Upgrade to premium
+        async function upgradeToPremium() {
+            try {
+                await api('/auth/upgrade', 'POST');
+                user.is_premium = true;
+                localStorage.setItem('wishlist_user', JSON.stringify(user));
+                updatePremiumUI();
+                await loadProducts();
+                showToast('Welcome to Premium! 👑');
+            } catch (err) {
+                showToast('Failed to upgrade');
+            }
+        }
+        
+        // Load products
+        async function loadProducts() {
+            try {
+                const res = await api('/products');
+                products = res.products;
+                renderProducts();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // Filter products
+        function filterProducts(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts();
+        }
+        
+        // Render products
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            let filtered = products;
+            
+            if (currentFilter !== 'all') {
+                filtered = products.filter(p => p.category === currentFilter);
+            }
+            
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card ${p.locked ? 'locked' : ''}">
+                    ${p.locked ? '<div class="lock-badge">👑 Premium</div>' : ''}
+                    <img src="${p.image}" alt="${p.name}" class="product-image" onerror="this.src='https://via.placeholder.com/200?text=Vape'">
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">$${p.price.toFixed(2)}</div>
+                        <div class="product-category">${p.category}</div>
+                        ${!p.locked ? `
+                        <div class="product-actions">
+                            <button class="action-btn ${wishlistIds.includes(p.id) ? 'active' : ''}" onclick="toggleWishlist(${p.id})">💫</button>
+                            <button class="action-btn ${favoriteIds.includes(p.id) ? 'active' : ''}" onclick="toggleFavorite(${p.id})">⭐</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load wishlist
+        async function loadWishlist() {
+            try {
+                const res = await api('/wishlist');
+                wishlistIds = res.items.map(i => i.id);
+                renderWishlist(res.items);
+                document.getElementById('wishlistCount').textContent = wishlistIds.length;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // Render wishlist
+        function renderWishlist(items) {
+            const grid = document.getElementById('wishlistItems');
+            const empty = document.getElementById('wishlistEmpty');
+            
+            if (items.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+            
+            grid.innerHTML = items.map(p => `
+                <div class="product-card">
+                    <img src="${p.image}" alt="${p.name}" class="product-image" onerror="this.src='https://via.placeholder.com/200?text=Vape'">
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">$${p.price.toFixed(2)}</div>
+                        <div class="product-actions">
+                            <button class="action-btn active" onclick="toggleWishlist(${p.id})">💫 Remove</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Toggle wishlist
+        async function toggleWishlist(productId) {
+            try {
+                if (wishlistIds.includes(productId)) {
+                    await api('/wishlist/remove', 'POST', { product_id: productId });
+                    wishlistIds = wishlistIds.filter(id => id !== productId);
+                    showToast('Removed from wishlist');
+                } else {
+                    await api('/wishlist/add', 'POST', { product_id: productId });
+                    wishlistIds.push(productId);
+                    showToast('Added to wishlist! 💫');
+                }
+                renderProducts();
+                document.getElementById('wishlistCount').textContent = wishlistIds.length;
+                loadWishlist();
+            } catch (err) {
+                showToast('Error updating wishlist');
+            }
+        }
+        
+        // Load favorites
+        async function loadFavorites() {
+            try {
+                const res = await api('/favorites');
+                favoriteIds = res.items.map(i => i.id);
+                renderFavorites(res.items);
+                document.getElementById('favoritesCount').textContent = favoriteIds.length;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        // Render favorites
+        function renderFavorites(items) {
+            const grid = document.getElementById('favoritesItems');
+            const empty = document.getElementById('favoritesEmpty');
+            
+            if (items.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+            
+            grid.innerHTML = items.map(p => `
+                <div class="product-card">
+                    <img src="${p.image}" alt="${p.name}" class="product-image" onerror="this.src='https://via.placeholder.com/200?text=Vape'">
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">$${p.price.toFixed(2)}</div>
+                        <div class="product-actions">
+                            <button class="action-btn active" onclick="toggleFavorite(${p.id})">⭐ Remove</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Toggle favorite
+        async function toggleFavorite(productId) {
+            try {
+                if (favoriteIds.includes(productId)) {
+                    await api('/favorites/remove', 'POST', { product_id: productId });
+                    favoriteIds = favoriteIds.filter(id => id !== productId);
+                    showToast('Removed from favorites');
+                } else {
+                    await api('/favorites/add', 'POST', { product_id: productId });
+                    favoriteIds.push(productId);
+                    showToast('Added to favorites! ⭐');
+                }
+                renderProducts();
+                document.getElementById('favoritesCount').textContent = favoriteIds.length;
+                loadFavorites();
+            } catch (err) {
+                showToast('Error updating favorites');
+            }
+        }
+        
+        // Tab navigation
+        function showTab(tab) {
+            const tabs = ['shop', 'wishlist', 'favorites', 'profile'];
+            tabs.forEach(t => {
+                document.getElementById(`${t}Tab`).style.display = t === tab ? 'block' : 'none';
+            });
+            
+            document.querySelectorAll('.nav-item').forEach((item, i) => {
+                item.classList.toggle('active', tabs[i] === tab);
+            });
+            
+            if (tab === 'wishlist') loadWishlist();
+            if (tab === 'favorites') loadFavorites();
+        }
+        
+        // Init
+        if (token && user) {
+            showMainApp();
+        }
+    </script>
+</body>
+</html>
